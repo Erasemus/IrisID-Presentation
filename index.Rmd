@@ -1,0 +1,50 @@
+---
+title       : Iris IDs in Shiny
+subtitle    : How to Pick Flowers
+author      : Erasemus
+job         : 
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+## Overview and Background
+### Overview:
+Using data from the Iris dataset and tools from the caret R package, this application predicts the species of Iris specimens based on four measrements.
+### Dataset Description
+The data set consists of 50 samples, published by Sir Ronald Fisher in 1936, from each of three species of Iris (Iris setosa, Iris virginica and Iris versicolor). Four features were measured from each sample: the length and the width of the sepals and petals, in centimeters. Based on the combination of these four features, Fisher developed a linear discriminant model to distinguish the species from each other (source: Wikipedia)
+
+--- .class #id 
+
+## Exploratory Data Analysis
+```{r,echo=FALSE}
+data(iris)
+library(caret)
+featurePlot(x=iris[,1:4], y=iris[,5], plot="density", scales=list(x=list(relation="free"), y=list(relation="free")), auto.key=list(columns=3))
+```
+
+---
+
+## Prediction Model Accuracy
+An assessment of the accuracy of using random forest as the method to generate a prediction model with the caret package train function reveals an accuracy of 93% against a test partition of the iris data.
+```{r, echo=TRUE}
+trainIndex <- createDataPartition(iris$Species, p = .8,
+                                 list = FALSE,
+                                 times = 1)
+irisTrain <- iris[ trainIndex,]
+irisTest  <- iris[-trainIndex,]
+mf<-train(irisTrain$Species ~ . ,data=irisTrain,method = 'rf')
+pm<-predict(mf,newdata=irisTest)
+postResample(pm,irisTest$Species)
+```
+
+---
+
+## Instructions
+### 1 Launch the application at http://erasemus.shinyapps.io/irisID
+### 2 After the values appear at their default positions user the sliders to pick a new set of values
+### 3 When ready to predict the species, select the Go button and see the resulting prediction
+
